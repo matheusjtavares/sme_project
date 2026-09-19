@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: Django",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/manage.py",
+      "args": [
+        "runserver",
+        "127.0.0.1:8000"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "django": true,
+      "justMyCode": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Frontend: React",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5173",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "dev: react",
+      "postDebugTask": "stop: react"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: Django + React",
+      "configurations": [
+        "Backend: Django",
+        "Frontend: React"
+      ],
+      "stopAll": true
+    }
+  ]
+}
