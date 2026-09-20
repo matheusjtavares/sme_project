@@ -19,6 +19,10 @@ dependencies = [
     { name = "django" },
     { name = "djangorestframework" },
     { name = "python-dotenv" },
+]
+
+[package.dev-dependencies]
+dev = [
     { name = "ruff" },
 ]
 
@@ -27,8 +31,10 @@ requires-dist = [
     { name = "django", specifier = ">=6.1.1" },
     { name = "djangorestframework", specifier = ">=3.18.1" },
     { name = "python-dotenv", specifier = ">=1.2.3" },
-    { name = "ruff", specifier = ">=0.16.8" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.16.8" }]
 
 [[package]]
 name = "django"

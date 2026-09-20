@@ -8,6 +8,10 @@ dependencies = [
     "django>=6.1.1",
     "djangorestframework>=3.18.1",
     "python-dotenv>=1.2.3",
+]
+
+[dependency-groups]
+dev = [
     "ruff>=0.16.8",
 ]
 
