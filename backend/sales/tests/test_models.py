@@ -7,15 +7,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from sales.models import Customer, Product, Sale, SaleItem, Seller, WeekdayCommission
-
-
-def clear_tables():
-    Sale.objects.all().delete()
-    SaleItem.objects.all().delete()
-    Product.objects.all().delete()
-    Customer.objects.all().delete()
-    Seller.objects.all().delete()
-    WeekdayCommission.objects.all().delete()
+from sales.tests.base import clear_tables
 
 
 class ProductModelTests(TestCase):
