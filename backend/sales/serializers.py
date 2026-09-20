@@ -79,3 +79,24 @@ class SaleSerializer(serializers.ModelSerializer):
                 quantity=item_data["quantity"],
                 unit_price=product.unit_price,
             )
+
+
+class SellerCommissionSerializer(serializers.Serializer):
+    id = serializers.IntegerField(source="seller.id")
+    name = serializers.CharField(source="seller.name")
+    total_commission = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        source="total",
+    )
+
+
+class CommissionReportSerializer(serializers.Serializer):
+    start = serializers.DateField()
+    end = serializers.DateField()
+    sellers = SellerCommissionSerializer(many=True)
+    total_commission = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        source="total",
+    )

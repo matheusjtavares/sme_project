@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.utils import timezone
 
 from sales.models import SaleItem, WeekdayCommission
-from sales.services.comission import (
+from sales.services.commission import (
     commission_report,
     effective_commission_percent,
     sale_commission,
