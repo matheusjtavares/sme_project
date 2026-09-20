@@ -1,5 +1,6 @@
 from django.utils.dateparse import parse_date
 from rest_framework import status, viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -37,6 +38,8 @@ class SaleViewSet(viewsets.ModelViewSet):
 class CommissionReportView(APIView):
     """Main Api Class for generating commission reports, which are not persisted in the database.
     Enabled Methods: [GET]"""
+
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:
