@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
 from sales.views import (
+    CommissionReportView,
     CustomerViewSet,
     ProductViewSet,
     SaleViewSet,
@@ -24,5 +25,6 @@ def health(request):
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("commission-report/", CommissionReportView.as_view(), name="commission-report"),
     path("health/", health),
 ]
