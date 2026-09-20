@@ -10,22 +10,65 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from urllib.parse import urlparse
+
+from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment overrides from the repository root .env file (if present).
+load_dotenv(BASE_DIR.parent / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
+
+def env_bool(name: str, default: str = "0") -> bool:
+    """Parse a boolean from an environment variable."""
+    return os.environ.get(name, default).lower() in ("1", "true", "yes", "on")
+
+
+def database_config() -> dict:
+    """Build the database config from the DATABASE_URL environment variable."""
+    url = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+    parsed = urlparse(url)
+    if parsed.scheme == "sqlite":
+        name = (parsed.netloc + parsed.path).lstrip("/")
+        return {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": name or "db.sqlite3",
+        }
+    if parsed.scheme in ("postgres", "postgresql"):
+        return {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": parsed.path.lstrip("/"),
+            "USER": parsed.username,
+            "PASSWORD": parsed.password,
+            "HOST": parsed.hostname,
+            "PORT": parsed.port,
+        }
+    raise ImproperlyConfigured(f"Unsupported DATABASE_URL scheme: {parsed.scheme!r}")
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-o$vt0$gn1acy_+=4yrzr#%ir8qcmtb8k0*vckucuctpc!3xwt-"
+# Set DJANGO_SECRET_KEY in the environment. The value below is for development only.
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-dev-only-do-not-use-in-prod-9bf0a3c1e7d24f5b80a19c6d4e2f37a8",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool("DJANGO_DEBUG", "1")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+]
 
 
 # Application definition
@@ -75,10 +118,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": database_config(),
 }
 
 
@@ -106,7 +146,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = os.environ.get("DJANGO_TIME_ZONE", "UTC")
 
 USE_I18N = True
 
