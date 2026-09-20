@@ -9,8 +9,18 @@ from django.utils import timezone
 from sales.models import Customer, Product, Sale, SaleItem, Seller, WeekdayCommission
 
 
+def clear_tables():
+    Sale.objects.all().delete()
+    SaleItem.objects.all().delete()
+    Product.objects.all().delete()
+    Customer.objects.all().delete()
+    Seller.objects.all().delete()
+    WeekdayCommission.objects.all().delete()
+
+
 class ProductModelTests(TestCase):
     def setUp(self):
+        clear_tables()
         self.product = Product.objects.create(
             code="P001",
             description="Test product",
@@ -62,6 +72,7 @@ class ProductModelTests(TestCase):
 
 class CustomerModelTests(TestCase):
     def setUp(self):
+        clear_tables()
         self.customer = Customer.objects.create(
             name="Acme Corp",
             email="contato@acme.com",
@@ -74,6 +85,7 @@ class CustomerModelTests(TestCase):
 
 class SellerModelTests(TestCase):
     def setUp(self):
+        clear_tables()
         self.seller = Seller.objects.create(
             name="Maria Silva",
             email="maria@example.com",
@@ -86,6 +98,7 @@ class SellerModelTests(TestCase):
 
 class WeekdayCommissionModelTests(TestCase):
     def setUp(self):
+        clear_tables()
         self.commission = WeekdayCommission.objects.create(
             weekday=WeekdayCommission.Weekday.MONDAY,
             min_percent=Decimal("1.50"),
@@ -136,6 +149,7 @@ class WeekdayCommissionModelTests(TestCase):
 
 class SaleModelTests(TestCase):
     def setUp(self):
+        clear_tables()
         self.customer = Customer.objects.create(
             name="Acme Corp",
             email="contato@acme.com",
@@ -220,6 +234,7 @@ class SaleModelTests(TestCase):
 
 class SaleItemModelTests(TestCase):
     def setUp(self):
+        clear_tables()
         self.customer = Customer.objects.create(
             name="Acme Corp",
             email="contato@acme.com",
