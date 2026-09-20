@@ -39,7 +39,7 @@ class CommissionReportView(APIView):
     """Main Api Class for generating commission reports, which are not persisted in the database.
     Enabled Methods: [GET]"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # noqa: RUF012
 
     def get(self, request):
         try:
