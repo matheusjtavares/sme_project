@@ -167,3 +167,9 @@ export function listSales(): Promise<Sale[]> {
     setTimeout(() => resolve(mockSales), 400);
   });
 }
+
+export function getSale(id: number): Promise<Sale | undefined> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockSales.find((sale) => sale.id === id)), 400);
+  });
+}
