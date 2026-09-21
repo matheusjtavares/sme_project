@@ -173,3 +173,24 @@ export function getSale(id: number): Promise<Sale | undefined> {
     setTimeout(() => resolve(mockSales.find((sale) => sale.id === id)), 400);
   });
 }
+
+export function createSale(
+  input: Omit<Sale, "id" | "invoice_number">,
+): Promise<Sale> {
+  return new Promise((resolve) => {
+    const nextId =
+      mockSales.reduce((max, sale) => Math.max(max, sale.id), 0) + 1;
+
+    const nextInvoice = String(
+      Number(mockSales[mockSales.length - 1].invoice_number) + 1,
+    ).padStart(8, "0");
+
+    setTimeout(() => {
+      const created: Sale = { id: nextId, invoice_number: nextInvoice, ...input };
+
+      mockSales.push(created);
+
+      resolve(created);
+    }, 400);
+  });
+}

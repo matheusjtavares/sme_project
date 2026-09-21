@@ -14,6 +14,10 @@ function resolveHeaderTitle(pathname: string): string {
     return `Alterar Venda - Nº ${editMatch[1]}`;
   }
 
+  if (pathname === "/sales/new") {
+    return "Nova Venda";
+  }
+
   if (pathname.startsWith("/sales")) {
     return "Vendas";
   }

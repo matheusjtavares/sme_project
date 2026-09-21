@@ -2,6 +2,15 @@
   width: 100%;
 }
 
+.pageHeader {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 16px;
+}
+
 .page h2 {
   margin: 0;
 
