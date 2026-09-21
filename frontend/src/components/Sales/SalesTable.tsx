@@ -1,8 +1,25 @@
 import Table from "react-bootstrap/Table";
 import { BsPencil, BsTrash } from "react-icons/bs";
+import { useSales } from "@/hooks/useSales";
 import styles from "./SalesTable.module.css";
 
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
+const datetimeFormatter = new Intl.DateTimeFormat("pt-BR", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
+function formatDateTime(iso: string): string {
+  return datetimeFormatter.format(new Date(iso)).replace(" ", " - ");
+}
+
 function SalesTable() {
+  const { sales, loading, error } = useSales();
+
   return (
     <div className={styles.tableWrapper}>
       <Table className={styles.table}>
@@ -18,39 +35,55 @@ function SalesTable() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>00001005</td>
+          {loading ? (
+            <tr>
+              <td colSpan={6} className={styles.stateCell}>
+                Carregando vendas...
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan={6} className={styles.stateCell}>
+                <span className={styles.stateError}>{error}</span>
+              </td>
+            </tr>
+          ) : (
+            sales.map((sale) => (
+              <tr key={sale.id}>
+                <td>{sale.invoiceNumber}</td>
 
-            <td>Jorge Lacerda dos Santos</td>
+                <td>{sale.customer}</td>
 
-            <td>Regina Souza</td>
+                <td>{sale.seller}</td>
 
-            <td>19/10/2022 - 14:25</td>
+                <td>{formatDateTime(sale.soldAt)}</td>
 
-            <td>R$ 71,10</td>
+                <td>{currencyFormatter.format(sale.totalAmount)}</td>
 
-            <td>
-              <button type="button" className={styles.viewItems}>
-                Ver itens
-              </button>
+                <td>
+                  <button type="button" className={styles.viewItems}>
+                    Ver itens
+                  </button>
 
-              <button
-                type="button"
-                className={`${styles.actionButton} ${styles.editButton}`}
-                aria-label="Editar venda"
-              >
-                <BsPencil />
-              </button>
+                  <button
+                    type="button"
+                    className={`${styles.actionButton} ${styles.editButton}`}
+                    aria-label="Editar venda"
+                  >
+                    <BsPencil />
+                  </button>
 
-              <button
-                type="button"
-                className={`${styles.actionButton} ${styles.deleteButton}`}
-                aria-label="Excluir venda"
-              >
-                <BsTrash />
-              </button>
-            </td>
-          </tr>
+                  <button
+                    type="button"
+                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                    aria-label="Excluir venda"
+                  >
+                    <BsTrash />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
     </div>

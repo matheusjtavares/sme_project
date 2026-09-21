@@ -156,6 +156,19 @@
 }
 
 /* =========================
+   Loading / error state
+   ========================= */
+
+.stateCell {
+  text-align: center;
+  color: #666;
+}
+
+.stateError {
+  color: #d00000;
+}
+
+/* =========================
    Responsive
    ========================= */
 
