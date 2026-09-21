@@ -1,3 +1,5 @@
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import styles from "./SaleDetailsPanel.module.css";
 
 function SaleDetailsPanel() {
@@ -5,31 +7,31 @@ function SaleDetailsPanel() {
     <div className={styles.panel}>
       <h2 className={styles.panelTitle}>Dados da venda</h2>
 
-      <label className={styles.field}>
-        <span className={styles.label}>Data/hora</span>
+      <div>
+        <Form.Label className={styles.label}>Data/hora</Form.Label>
 
-        <input type="datetime-local" />
-      </label>
+        <Form.Control type="datetime-local" />
+      </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>Vendedor</span>
+      <div>
+        <Form.Label className={styles.label}>Vendedor</Form.Label>
 
-        <select defaultValue={0}>
+        <Form.Select defaultValue={0}>
           <option value={0} disabled>
             Selecione um vendedor
           </option>
-        </select>
-      </label>
+        </Form.Select>
+      </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>Cliente</span>
+      <div>
+        <Form.Label className={styles.label}>Cliente</Form.Label>
 
-        <select defaultValue={0}>
+        <Form.Select defaultValue={0}>
           <option value={0} disabled>
             Selecione um cliente
           </option>
-        </select>
-      </label>
+        </Form.Select>
+      </div>
 
       <div className={styles.footer}>
         <div className={styles.totalRow}>
@@ -39,13 +41,13 @@ function SaleDetailsPanel() {
         </div>
 
         <div className={styles.actions}>
-          <button type="button" className={styles.cancelButton}>
+          <Button variant="primary" className={styles.cancelButton}>
             Cancelar
-          </button>
+          </Button>
 
-          <button type="button" className={styles.finalizeButton}>
+          <Button variant="primary-light" className={styles.finalizeButton}>
             Finalizar
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,3 +1,6 @@
+import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import styles from "./SaleItemsPanel.module.css";
 
 function SaleItemsPanel() {
@@ -6,28 +9,28 @@ function SaleItemsPanel() {
       <h2 className={styles.panelTitle}>Produtos</h2>
 
       <div className={styles.addRow}>
-        <label className={styles.field}>
-          <span className={styles.label}>Produto</span>
+        <div className={styles.field}>
+          <Form.Label className={styles.label}>Produto</Form.Label>
 
-          <select defaultValue={0}>
+          <Form.Select defaultValue={0}>
             <option value={0} disabled>
               Selecione um produto
             </option>
-          </select>
-        </label>
+          </Form.Select>
+        </div>
 
-        <label className={styles.fieldQty}>
-          <span className={styles.label}>Quantidade</span>
+        <div className={styles.fieldQty}>
+          <Form.Label className={styles.label}>Quantidade</Form.Label>
 
-          <input type="number" min={1} defaultValue={1} />
-        </label>
+          <Form.Control type="number" min={1} defaultValue={1} />
+        </div>
 
-        <button type="button" className={styles.addButton}>
+        <Button type="button" variant="primary" className={styles.addButton}>
           Adicionar
-        </button>
+        </Button>
       </div>
 
-      <table className={styles.table}>
+      <Table className={styles.table}>
         <thead>
           <tr>
             <th>Produto/Serviço</th>
@@ -45,7 +48,7 @@ function SaleItemsPanel() {
             </td>
           </tr>
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 }

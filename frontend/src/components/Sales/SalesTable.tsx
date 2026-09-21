@@ -1,5 +1,6 @@
 import { Fragment, useState } from "react";
 import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
 import { BsPencil, BsTrash } from "react-icons/bs";
 import { useSales } from "@/hooks/useSales";
 import styles from "./SalesTable.module.css";
@@ -37,22 +38,25 @@ function SalesTable() {
             <th>Cliente</th>
             <th>Vendedor</th>
             <th>Data da Venda</th>
-            <th>Valor Total</th>
-            <th>Opções</th>
+            <th className="text-center">Valor Total</th>
+            <th className="text-center">Opções</th>
           </tr>
         </thead>
 
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={6} className={styles.stateCell}>
+              <td
+                colSpan={6}
+                className="text-center text-secondary"
+              >
                 Carregando vendas...
               </td>
             </tr>
           ) : error ? (
             <tr>
-              <td colSpan={6} className={styles.stateCell}>
-                <span className={styles.stateError}>{error}</span>
+              <td colSpan={6} className="text-center">
+                <span className="text-danger">{error}</span>
               </td>
             </tr>
           ) : (
@@ -70,33 +74,40 @@ function SalesTable() {
 
                     <td>{formatDateTime(sale.sold_at)}</td>
 
-                    <td>{currencyFormatter.format(Number(sale.total))}</td>
+                    <td className="text-center">
+                      {currencyFormatter.format(Number(sale.total))}
+                    </td>
 
-                    <td>
-                      <button
-                        type="button"
-                        className={styles.viewItems}
+                    <td className="text-center">
+                      <Button
+                        variant="link"
+                        className="p-0 fw-bold me-4"
                         aria-expanded={expanded}
                         onClick={() =>
                           setExpandedSaleId(expanded ? null : sale.id)
                         }
                       >
                         {expanded ? "Fechar" : "Ver itens"}
-                      </button>
-                      <NavLink
-                        to={`/sales/edit/${sale.id}`}
-                        className={`${styles.actionButton} ${styles.editButton}`}
-                        aria-label="Editar venda"
-                      >
-                        <BsPencil />
-                      </NavLink>
-                      <button
-                        type="button"
-                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                        aria-label="Excluir venda"
-                      >
-                        <BsTrash />
-                      </button>
+                      </Button>
+
+                      <span className="d-inline-flex align-items-center gap-3">
+                        <NavLink
+                          to={`/sales/edit/${sale.id}`}
+                          className="btn btn-link p-0 text-decoration-none"
+                          aria-label="Editar venda"
+                        >
+                          <BsPencil />
+                        </NavLink>
+
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="p-0 text-danger text-decoration-none"
+                          aria-label="Excluir venda"
+                        >
+                          <BsTrash />
+                        </Button>
+                      </span>
                     </td>
                   </tr>
 

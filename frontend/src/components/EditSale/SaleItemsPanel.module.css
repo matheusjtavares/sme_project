@@ -1,14 +1,8 @@
 .panel {
   display: flex;
 
-  padding: 0;
-
   flex-direction: column;
   gap: 24px;
-
-  background: transparent;
-
-  border: none;
 }
 
 .panelTitle {
@@ -34,78 +28,31 @@
 }
 
 .field {
-  display: flex;
-
   min-width: 220px;
 
   flex: 1;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .fieldQty {
-  display: flex;
-
   width: 165px;
-
-  flex-direction: column;
-  gap: 8px;
 }
 
 .label {
-  color: #111;
-
   font-size: 14px;
-  font-weight: 400;
 }
 
-.addRow select,
-.addRow input {
+.addRow :global(.form-control),
+.addRow :global(.form-select) {
   height: 44px;
-  padding: 0 14px;
-
-  color: var(--text, #111);
-
-  background: #fff;
-
-  border: 1px solid #e3e3e3;
-  border-radius: 2px;
 
   font-size: 14px;
-
-  box-sizing: border-box;
-}
-
-.addRow select:focus,
-.addRow input:focus {
-  border-color: #4caf93;
-
-  outline: none;
-}
-
-.addRow input::placeholder {
-  color: #aaa;
 }
 
 .addButton {
   height: 44px;
   padding: 0 24px;
 
-  color: #fff;
-
-  background: var(--primary);
-
-  border: none;
-  border-radius: 2px;
-
   font-size: 15px;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.addButton:hover {
-  background: #004f54;
 }
 
 /* =========================
@@ -119,6 +66,8 @@
   border-collapse: collapse;
 
   font-size: 16px;
+
+  --bs-table-bg: transparent;
 }
 
 .table thead th {
@@ -162,32 +111,8 @@
   text-align: center;
 }
 
-.removeButton {
-  display: inline-flex;
-
-  width: 24px;
-  height: 24px;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  color: #c40000;
-
-  background: transparent;
-
-  border: none;
-
-  cursor: pointer;
-}
-
-.removeButton:hover {
-  color: #900000;
-}
-
-.emptyCell {
-  padding: 32px 10px !important;
+.table .emptyCell {
+  padding: 32px 10px;
 
   color: #777;
 
