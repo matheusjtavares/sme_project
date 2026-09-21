@@ -50,15 +50,15 @@ function SalesTable() {
           ) : (
             sales.map((sale) => (
               <tr key={sale.id}>
-                <td>{sale.invoiceNumber}</td>
+                <td>{sale.invoice_number}</td>
 
-                <td>{sale.customer}</td>
+                <td>{sale.customer_name}</td>
 
-                <td>{sale.seller}</td>
+                <td>{sale.seller_name}</td>
 
-                <td>{formatDateTime(sale.soldAt)}</td>
+                <td>{formatDateTime(sale.sold_at)}</td>
 
-                <td>{currencyFormatter.format(sale.totalAmount)}</td>
+                <td>{currencyFormatter.format(Number(sale.total))}</td>
 
                 <td>
                   <button type="button" className={styles.viewItems}>

@@ -1,8 +1,13 @@
+import type { SaleItem } from "./saleitems";
+
 export interface Sale {
   id: number;
-  invoiceNumber: string;
-  customer: string;
-  seller: string;
-  soldAt: string;
-  totalAmount: number;
+  invoice_number: string;
+  sold_at: string;
+  customer: number;
+  customer_name: string;
+  seller: number;
+  seller_name: string;
+  items: SaleItem[];
+  total: string;
 }
