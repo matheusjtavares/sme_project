@@ -15,6 +15,19 @@ export default function AppSidebar({ open }: AppSidebarProps) {
     <aside className={sidebarClassName}>
       <nav>
         <NavLink
+          to=""
+          className={({ isActive }) =>
+            `${styles.item} ${isActive ? styles.itemActive : ""}`
+          }
+        >
+          <span className={styles.itemIcon}>⌂</span>
+
+          <span>Home</span>
+
+          <span className={styles.chevron}>›</span>
+        </NavLink>
+
+        <NavLink
           to="/sales"
           className={({ isActive }) =>
             `${styles.item} ${isActive ? styles.itemActive : ""}`

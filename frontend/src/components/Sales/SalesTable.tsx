@@ -3,7 +3,7 @@ import Table from "react-bootstrap/Table";
 import { BsPencil, BsTrash } from "react-icons/bs";
 import { useSales } from "@/hooks/useSales";
 import styles from "./SalesTable.module.css";
-
+import { NavLink } from "react-router-dom";
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
@@ -83,15 +83,13 @@ function SalesTable() {
                       >
                         {expanded ? "Fechar" : "Ver itens"}
                       </button>
-
-                      <button
-                        type="button"
+                      <NavLink
+                        to={`/sales/edit/${sale.id}`}
                         className={`${styles.actionButton} ${styles.editButton}`}
                         aria-label="Editar venda"
                       >
                         <BsPencil />
-                      </button>
-
+                      </NavLink>
                       <button
                         type="button"
                         className={`${styles.actionButton} ${styles.deleteButton}`}
