@@ -2,6 +2,7 @@ import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { BsTrash } from "react-icons/bs";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete";
@@ -13,6 +14,8 @@ import type { SaleItem } from "@/types/saleitems";
 interface SaleItemsPanelProps {
   items: SaleItem[];
   products: Product[];
+  onAddItem: (product: Product, quantity: number) => void;
+  onRemoveItem: (id: number) => void;
 }
 
 function toAutocompleteOptions(products: Product[]): AutocompleteOption[] {
@@ -23,9 +26,30 @@ function toAutocompleteOptions(products: Product[]): AutocompleteOption[] {
   }));
 }
 
-function SaleItemsPanel({ items, products }: SaleItemsPanelProps) {
+function findProduct(products: Product[], id: number): Product | undefined {
+  return products.find((product) => product.id === id);
+}
+
+function SaleItemsPanel({
+  items,
+  products,
+  onAddItem,
+  onRemoveItem,
+}: SaleItemsPanelProps) {
   const [selectedProduct, setSelectedProduct] =
     useState<AutocompleteOption | null>(null);
+  const [quantity, setQuantity] = useState(1);
+
+  function handleAdd() {
+    if (!selectedProduct || quantity < 1) return;
+
+    const product = findProduct(products, selectedProduct.value);
+    if (!product) return;
+
+    onAddItem(product, quantity);
+    setSelectedProduct(null);
+    setQuantity(1);
+  }
 
   return (
     <div className={styles.panel}>
@@ -47,10 +71,20 @@ function SaleItemsPanel({ items, products }: SaleItemsPanelProps) {
         <div className={styles.fieldQty}>
           <Form.Label className={styles.label}>Quantidade</Form.Label>
 
-          <Form.Control type="number" min={1} defaultValue={1} />
+          <Form.Control
+            type="number"
+            min={1}
+            value={quantity}
+            onChange={(event) => setQuantity(Number(event.target.value))}
+          />
         </div>
 
-        <Button type="button" variant="primary" className={styles.addButton}>
+        <Button
+          type="button"
+          variant="primary"
+          className={styles.addButton}
+          onClick={handleAdd}
+        >
           Adicionar
         </Button>
       </div>
@@ -86,7 +120,17 @@ function SaleItemsPanel({ items, products }: SaleItemsPanelProps) {
                   {formatCurrency(item.quantity * Number(item.unit_price))}
                 </td>
 
-                <td />
+                <td>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 text-danger text-decoration-none"
+                    aria-label="Excluir item"
+                    onClick={() => onRemoveItem(item.id)}
+                  >
+                    <BsTrash />
+                  </Button>
+                </td>
               </tr>
             ))
           )}
