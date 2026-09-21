@@ -8,6 +8,7 @@ export interface WeekdayCommission {
 export interface SellerCommission {
   id: number;
   name: string;
+  total_sales: string;
   total_commission: string;
 }
 
