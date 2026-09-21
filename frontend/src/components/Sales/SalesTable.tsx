@@ -5,10 +5,7 @@ import { BsPencil, BsTrash } from "react-icons/bs";
 import { useSales } from "@/hooks/useSales";
 import styles from "./SalesTable.module.css";
 import { NavLink } from "react-router-dom";
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
+import { formatCurrency } from "@/utils/format";
 
 const percentFormatter = new Intl.NumberFormat("pt-BR", {
   style: "percent",
@@ -75,7 +72,7 @@ function SalesTable() {
                     <td>{formatDateTime(sale.sold_at)}</td>
 
                     <td className="text-center">
-                      {currencyFormatter.format(Number(sale.total))}
+                      {formatCurrency(sale.total)}
                     </td>
 
                     <td className="text-center">
@@ -134,13 +131,11 @@ function SalesTable() {
                                 <td>{item.quantity}</td>
 
                                 <td>
-                                  {currencyFormatter.format(
-                                    Number(item.unit_price),
-                                  )}
+                                  {formatCurrency(item.unit_price)}
                                 </td>
 
                                 <td>
-                                  {currencyFormatter.format(
+                                  {formatCurrency(
                                     item.quantity * Number(item.unit_price),
                                   )}
                                 </td>
@@ -152,9 +147,7 @@ function SalesTable() {
                                 </td>
 
                                 <td>
-                                  {currencyFormatter.format(
-                                    Number(item.commission),
-                                  )}
+                                  {formatCurrency(item.commission)}
                                 </td>
                               </tr>
                             ))}
