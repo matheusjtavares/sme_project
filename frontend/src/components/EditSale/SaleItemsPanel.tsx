@@ -1,9 +1,32 @@
+import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Autocomplete, {
+  type AutocompleteOption,
+} from "@/components/Autocomplete";
 import styles from "./SaleItemsPanel.module.css";
+import { formatCurrency } from "@/utils/format";
+import type { Product } from "@/types/products";
+import type { SaleItem } from "@/types/saleitems";
 
-function SaleItemsPanel() {
+interface SaleItemsPanelProps {
+  items: SaleItem[];
+  products: Product[];
+}
+
+function toAutocompleteOptions(products: Product[]): AutocompleteOption[] {
+  return products.map((product) => ({
+    value: product.id,
+    label: product.description,
+    searchText: `${product.code} ${product.description}`,
+  }));
+}
+
+function SaleItemsPanel({ items, products }: SaleItemsPanelProps) {
+  const [selectedProduct, setSelectedProduct] =
+    useState<AutocompleteOption | null>(null);
+
   return (
     <div className={styles.panel}>
       <h2 className={styles.panelTitle}>Produtos</h2>
@@ -12,11 +35,13 @@ function SaleItemsPanel() {
         <div className={styles.field}>
           <Form.Label className={styles.label}>Produto</Form.Label>
 
-          <Form.Select defaultValue={0}>
-            <option value={0} disabled>
-              Selecione um produto
-            </option>
-          </Form.Select>
+          <Autocomplete
+            options={toAutocompleteOptions(products)}
+            selected={selectedProduct}
+            onSelect={setSelectedProduct}
+            placeholder="Busque um produto por código ou descrição"
+            emptyMessage="Nenhum produto encontrado"
+          />
         </div>
 
         <div className={styles.fieldQty}>
@@ -42,11 +67,29 @@ function SaleItemsPanel() {
         </thead>
 
         <tbody>
-          <tr>
-            <td colSpan={5} className={styles.emptyCell}>
-              Nenhum item adicionado.
-            </td>
-          </tr>
+          {items.length === 0 ? (
+            <tr>
+              <td colSpan={5} className={styles.emptyCell}>
+                Nenhum item adicionado.
+              </td>
+            </tr>
+          ) : (
+            items.map((item) => (
+              <tr key={item.id}>
+                <td>{item.product_name}</td>
+
+                <td>{item.quantity}</td>
+
+                <td>{formatCurrency(item.unit_price)}</td>
+
+                <td>
+                  {formatCurrency(item.quantity * Number(item.unit_price))}
+                </td>
+
+                <td />
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
     </div>
