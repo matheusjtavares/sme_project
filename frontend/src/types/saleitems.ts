@@ -4,4 +4,6 @@ export interface SaleItem {
   product_name: string;
   quantity: number;
   unit_price: string;
+  commission_percent: string;
+  commission: string;
 }

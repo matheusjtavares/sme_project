@@ -169,6 +169,78 @@
 }
 
 /* =========================
+   Items expandable panel
+   ========================= */
+
+.itemsRow > * {
+  padding: 16px 24px;
+
+  background: #f4f7f6;
+}
+
+.table .itemsRow:hover > * {
+  background-color: #f4f7f6;
+}
+
+.itemsTable {
+  width: 100%;
+  margin: 0;
+
+  font-size: 14px;
+
+  border-collapse: collapse;
+}
+
+.itemsTable thead th {
+  padding: 6px 12px;
+
+  color: #444;
+
+  border-bottom: 1px solid #bbb;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+.itemsTable thead th:first-child,
+.itemsTable tbody td:first-child {
+  padding-left: 0;
+}
+
+.itemsTable thead th:last-child,
+.itemsTable tbody td:last-child {
+  padding-right: 0;
+}
+
+.itemsTable tbody td {
+  padding: 6px 12px;
+
+  color: #111;
+
+  border-bottom: 1px solid #e2e5e4;
+
+  font-size: 14px;
+  font-weight: 400;
+
+  vertical-align: middle;
+}
+
+.itemsTable th:nth-child(2),
+.itemsTable td:nth-child(2) {
+  text-align: center;
+}
+
+.itemsTable th:nth-child(n + 3),
+.itemsTable td:nth-child(n + 3) {
+  text-align: right;
+}
+
+/* =========================
    Responsive
    ========================= */
 
