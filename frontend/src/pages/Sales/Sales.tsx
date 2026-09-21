@@ -8,8 +8,8 @@ export default function Sales() {
       <div className={styles.pageHeader}>
         <h2>Vendas Realizadas</h2>
 
-        <NavLink to="/sales/new" className="btn btn-primary">
-          Nova Venda
+        <NavLink to="/sales/new" className="btn btn-primary" style={{ fontSize: "14px" }}>
+          Inserir Nova Venda
         </NavLink>
       </div>
 
