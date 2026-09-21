@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import { BsCalendar3, BsSearch } from "react-icons/bs";
+import { BsSearch } from "react-icons/bs";
 import CommissionTable from "@/components/Commissions";
+import DatePicker from "@/components/DatePicker";
 import { useCommissionReport } from "@/hooks/useCommissionReport";
 import styles from "./Commissions.module.css";
 
@@ -31,31 +32,17 @@ export default function Commissions() {
         <h2>Relatório de Comissões</h2>
 
         <div className={styles.filters}>
-          <div className="input-group">
-            <input
-              type="date"
-              className="form-control"
-              value={draftStart}
-              aria-label="Data inicial"
-              onChange={(event) => setDraftStart(event.target.value)}
-            />
-            <span className="input-group-text border-0 bg-transparent">
-              <BsCalendar3 />
-            </span>
-          </div>
+          <DatePicker
+            value={draftStart}
+            onChange={setDraftStart}
+            ariaLabel="Data inicial"
+          />
 
-          <div className="input-group">
-            <input
-              type="date"
-              className="form-control"
-              value={draftEnd}
-              aria-label="Data final"
-              onChange={(event) => setDraftEnd(event.target.value)}
-            />
-            <span className="input-group-text border-0 bg-transparent">
-              <BsCalendar3 />
-            </span>
-          </div>
+          <DatePicker
+            value={draftEnd}
+            onChange={setDraftEnd}
+            ariaLabel="Data final"
+          />
 
           <Button
             type="button"
