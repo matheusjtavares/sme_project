@@ -8,7 +8,7 @@ interface AppHeaderProps {
 }
 
 function resolveHeaderTitle(pathname: string): string {
-  const editMatch = pathname.match(/^\/editsales\/([^/]+)$/);
+  const editMatch = pathname.match(/^\/sales\/edit\/([^/]+)$/);
 
   if (editMatch) {
     return `Alterar Venda - Nº ${editMatch[1]}`;
