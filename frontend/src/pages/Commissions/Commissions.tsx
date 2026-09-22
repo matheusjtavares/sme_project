@@ -6,8 +6,8 @@ import DatePicker from "@/components/DatePicker";
 import { useCommissionReport } from "@/hooks/useCommissionReport";
 import styles from "./Commissions.module.css";
 
-const DEFAULT_START = "2022-10-19";
-const DEFAULT_END = "2022-10-21";
+const DEFAULT_START = "2026-01-01";
+const DEFAULT_END = "2026-12-31";
 
 export default function Commissions() {
   const [draftStart, setDraftStart] = useState(DEFAULT_START);
