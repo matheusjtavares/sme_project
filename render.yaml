@@ -46,7 +46,7 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: https://sme-backend-u65g.onrender.com
+        value: sme-backend-u65g.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: sme-db
