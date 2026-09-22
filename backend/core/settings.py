@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-from urllib.parse import urlparse
 
+import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
@@ -35,40 +35,60 @@ def env_bool(name: str, default: str = "0") -> bool:
 
 
 def database_config() -> dict:
-    """Build the database config from the DATABASE_URL environment variable."""
+    """Build the database config from the DATABASE_URL environment variable.
+
+    SQLite is handled manually (dev default); everything else (e.g. Render's
+    Postgres) is delegated to dj-database-url.
+    """
     url = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
-    parsed = urlparse(url)
-    if parsed.scheme == "sqlite":
-        name = (parsed.netloc + parsed.path).lstrip("/")
+    if url.startswith("sqlite"):
+        name = url.removeprefix("sqlite:///") or "db.sqlite3"
         return {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": name or "db.sqlite3",
+            "NAME": name,
         }
-    if parsed.scheme in ("postgres", "postgresql"):
-        return {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": parsed.path.lstrip("/"),
-            "USER": parsed.username,
-            "PASSWORD": parsed.password,
-            "HOST": parsed.hostname,
-            "PORT": parsed.port,
-        }
-    raise ImproperlyConfigured(f"Unsupported DATABASE_URL scheme: {parsed.scheme!r}")
+    return dj_database_url.parse(url, conn_max_age=600)
 
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# Set DJANGO_SECRET_KEY in the environment. The value below is for development only.
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-dev-only-do-not-use-in-prod-9bf0a3c1e7d24f5b80a19c6d4e2f37a8",
-)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DJANGO_DEBUG", "1")
 
+# SECURITY WARNING: keep the secret key used in production secret!
+# DJANGO_SECRET_KEY is required when DEBUG is off; the fallback below is for
+# local development only and must never be used in production.
+_SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if not _SECRET_KEY and not DEBUG:
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DEBUG is disabled.")
+SECRET_KEY = _SECRET_KEY or "django-insecure-dev-only-do-not-use-in-prod-9bf0a3c1e7d24f5b80a19c6d4e2f37a8"
+
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    for host in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1,.onrender.com",
+    ).split(",")
+]
+
+# Comma-separated list of origins allowed to call the API cross-origin.
+# Defaults cover local development (Vite dev server); set this to the frontend
+# URL in production (e.g. https://sme-frontend.onrender.com).
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
+]
+
+# CSRF is only enforced for session-based auth (e.g. Django admin) — the SPA
+# authenticates with JWTs. Still, trusting the frontend origin keeps mixed
+# auth flows working once they are on different onrender.com subdomains.
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
 ]
 
 
@@ -76,11 +96,13 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "core",
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "sales",
     "rest_framework",
@@ -90,6 +112,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -161,6 +185,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 # Email
