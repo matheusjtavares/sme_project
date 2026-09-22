@@ -6,7 +6,7 @@ import Commissions from "@/pages/Commissions";
 import EditSales from "@/pages/EditSales";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
-import NovaVenda from "@/pages/NewSales";
+import NewSales from "@/pages/NewSales";
 import Sales from "@/pages/Sales";
 
 export default function AppRoutes() {
@@ -23,7 +23,7 @@ export default function AppRoutes() {
       >
         <Route index element={<Home />} />
         <Route path="sales" element={<Sales />} />
-        <Route path="sales/new" element={<NovaVenda />} />
+        <Route path="sales/new" element={<NewSales />} />
         <Route path="commissions" element={<Commissions />} />
         <Route path="sales/edit/:id" element={<EditSales />} />
       </Route>
