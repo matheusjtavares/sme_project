@@ -93,12 +93,25 @@ development workflow.
 
 A [`render.yaml`](render.yaml) blueprint declares the whole stack: a free
 PostgreSQL database, the Django API as a Python web service, and the React SPA
-as a static site served from the CDN:
+as a static site served from the CDN.
+
+### Live deployment
+
+The stack is currently published at (URLs come from [`render.yaml`](render.yaml)):
+
+- **Frontend (SPA):** <https://sme-frontend-7e6j.onrender.com>
+- **Backend (API + admin):** <https://sme-backend-u65g.onrender.com>
+  - API base: `https://sme-backend-u65g.onrender.com/api`
+  - Admin: <https://sme-backend-u65g.onrender.com/admin/>
+
+### Recreating the stack
 
 - In the Render dashboard choose **New > Blueprint** and select this repository.
 - Render provisions `<your-project>-backend.onrender.com` (API + admin) and
   `<your-project>-frontend.onrender.com` (SPA), wires up `DATABASE_URL` to the
   internal database URL, and sets `VITE_API_URL` at build time.
+- Update the URLs above (plus `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`
+  and `CSRF_TRUSTED_ORIGINS` in `render.yaml`) to match the new services.
 - The SPA rewrite rule (`/*` → `/index.html`) keeps React Router deep links
   working; the backend uses gunicorn bound to Render's `$PORT`, WhiteNoise for
   static files, and a health check at `/api/health/`.
