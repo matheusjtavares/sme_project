@@ -24,7 +24,6 @@ services:
     name: sme-backend
     runtime: python         # uv is bundled in Render's Python runtime
     plan: free
-    region: oregon          # keep this the same for both services + db
     branch: main
     rootDir: backend
     buildCommand: >-
