@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -74,6 +75,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "core",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -82,6 +84,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "sales",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "dj_rest_auth",
 ]
 
 MIDDLEWARE = [
@@ -198,6 +202,39 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
+}
+
+# ---------------------------------------------------------------------------
+# Authentication (dj-rest-auth + SimpleJWT)
+#
+# DEV/VALIDATION SCAFFOLD — not a production-grade auth design.
+# JWT tokens are returned in the response body and kept in the SPA's
+# localStorage (XSS-exposed). No HTTP-only cookies, no CSRF hardening, no
+# refresh rotation strategy tuned for production. Auth is out of scope for
+# this project; this setup exists so the frontend↔backend integration and
+# the JWT flow can be exercised end to end.
+# ---------------------------------------------------------------------------
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
+    "SESSION_LOGIN": False,
+    "TOKEN_MODEL": None,
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.environ.get("JWT_ACCESS_LIFETIME_MINUTES", "60"))
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=int(os.environ.get("JWT_REFRESH_LIFETIME_DAYS", "7"))
+    ),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
 }
