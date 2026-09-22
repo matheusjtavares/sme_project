@@ -11,3 +11,15 @@ export interface Sale {
   items: SaleItem[];
   total: string;
 }
+
+export interface SaleItemInput {
+  product: number;
+  quantity: number;
+}
+
+export interface SalePayload {
+  sold_at: string;
+  customer: number;
+  seller: number;
+  items: SaleItemInput[];
+}
