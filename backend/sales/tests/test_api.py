@@ -120,14 +120,14 @@ class PermissionMatrixTests(SalesAPITestCase):
 
     def test_anonymous_cannot_create(self):
         response = self.client.post(reverse("product-list"), data={}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_anonymous_cannot_update_or_delete(self):
         url = reverse("product-detail", args=[self.product.id])
         patch = self.client.patch(url, data={}, format="json")
         delete = self.client.delete(url)
-        self.assertEqual(patch.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(delete.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(patch.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(delete.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_authenticated_without_permissions_can_read(self):
         user = make_user(username="plain")
@@ -178,7 +178,7 @@ class ResourcePermissionTests(SalesAPITestCase):
         url = reverse("customer-list")
         self.assertEqual(
             self.client.post(url, data={}, format="json").status_code,
-            status.HTTP_403_FORBIDDEN,
+            status.HTTP_401_UNAUTHORIZED,
         )
         user = add_permissions(make_user(username="cust"), "add_customer")
         self.client.force_authenticate(user=user)
@@ -291,7 +291,7 @@ class SaleApiTests(SalesAPITestCase):
 
     def test_anonymous_cannot_create_sale(self):
         response = self.client.post(reverse("sale-list"), data={}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class ListResponseTests(SalesAPITestCase):
