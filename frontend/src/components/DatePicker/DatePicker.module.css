@@ -1,0 +1,26 @@
+.inputWrap {
+  position: relative;
+
+  width: 160px;
+}
+
+.input {
+  width: 100%;
+
+  padding-right: 34px;
+
+  cursor: pointer;
+}
+
+.calendarIcon {
+  position: absolute;
+
+  top: 50%;
+  right: 12px;
+
+  transform: translateY(-50%);
+
+  color: #999;
+
+  pointer-events: none;
+}

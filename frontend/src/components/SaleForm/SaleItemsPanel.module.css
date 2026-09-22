@@ -1,0 +1,120 @@
+.panel {
+  display: flex;
+
+  flex-direction: column;
+  gap: 24px;
+}
+
+.panelTitle {
+  margin: 0;
+
+  color: #111;
+
+  font-size: 24px;
+  font-weight: 400;
+}
+
+/* =========================
+   Add item row
+   ========================= */
+
+.addRow {
+  display: flex;
+
+  align-items: flex-end;
+  gap: 18px;
+
+  flex-wrap: wrap;
+}
+
+.field {
+  min-width: 220px;
+
+  flex: 1;
+}
+
+.fieldQty {
+  width: 165px;
+}
+
+.label {
+  font-size: 14px;
+}
+
+.addRow :global(.form-control),
+.addRow :global(.form-select) {
+  height: 44px;
+
+  font-size: 14px;
+}
+
+.addButton {
+  height: 44px;
+  padding: 0 24px;
+
+  font-size: 15px;
+}
+
+/* =========================
+   Items table
+   ========================= */
+
+.table {
+  width: 100%;
+  margin-top: 16px;
+
+  border-collapse: collapse;
+
+  font-size: 16px;
+
+  --bs-table-bg: transparent;
+}
+
+.table thead th {
+  padding: 12px 10px 20px;
+
+  color: #111;
+
+  border: none;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: 12px 10px;
+
+  color: #111;
+
+  border: none;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2),
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  text-align: center;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  text-align: right;
+}
+
+.table th:last-child,
+.table td:last-child {
+  width: 40px;
+
+  text-align: center;
+}
+
+.table .emptyCell {
+  padding: 32px 10px;
+
+  color: #777;
+
+  text-align: center;
+}

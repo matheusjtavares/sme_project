@@ -1,0 +1,12 @@
+.page {
+  width: 100%;
+}
+
+.page h2 {
+  margin: 0;
+
+  color: var(--primary);
+
+  font-size: 24px;
+  font-weight: 700;
+}

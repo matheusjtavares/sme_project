@@ -1,0 +1,105 @@
+.header {
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e1e1e1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+
+  z-index: 10;
+}
+
+.menuButton {
+  width: 32px;
+  height: 32px;
+
+  margin-left: 95px;
+  padding: 5px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.menuButton span {
+  display: block;
+
+  width: 22px;
+  height: 3px;
+
+  border-radius: 2px;
+
+  background: var(--primary);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-left: 28px;
+}
+
+.logoMark {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 3px solid #4f5960;
+  border-radius: 50%;
+
+  color: #4f5960;
+  font-size: 19px;
+}
+
+.logoText {
+  color: #343a40;
+
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.headerTitle {
+  position: absolute;
+
+  left: 50%;
+  transform: translateX(-50%);
+
+  margin: 0;
+
+  color: var(--primary);
+
+  font-size: 32px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .menuButton {
+    margin-left: 20px;
+  }
+
+  .logo {
+    margin-left: 10px;
+  }
+
+  .logoText {
+    display: none;
+  }
+
+  .headerTitle {
+    font-size: 25px;
+  }
+}
