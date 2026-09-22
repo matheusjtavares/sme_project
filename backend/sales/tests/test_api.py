@@ -293,6 +293,49 @@ class SaleApiTests(SalesAPITestCase):
         response = self.client.post(reverse("sale-list"), data={}, format="json")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_create_sale_without_invoice_number_generates(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(
+            reverse("sale-list"),
+            data={
+                "sold_at": "2026-09-02T09:30:00Z",
+                "customer": self.customer.id,
+                "seller": self.seller.id,
+                "items": [{"product": self.product.id, "quantity": 2}],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.json()["invoice_number"],
+            f"NF-{timezone.now().year}-0001",
+        )
+        self.assertEqual(Sale.objects.count(), 1)
+
+    def test_patch_sale_preserves_invoice_number(self):
+        add_permissions(self.user, "change_sale")
+        self.client.force_authenticate(user=self.user)
+        sale = make_sale(
+            invoice_number="NF-KEEP-1",
+            customer=self.customer,
+            seller=self.seller,
+        )
+        SaleItem.objects.create(
+            sale=sale,
+            product=self.product,
+            quantity=1,
+            unit_price=self.product.unit_price,
+        )
+        response = self.client.patch(
+            reverse("sale-detail", args=[sale.id]),
+            data={"items": [{"product": self.product.id, "quantity": 5}]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["invoice_number"], "NF-KEEP-1")
+        sale.refresh_from_db()
+        self.assertEqual(sale.items.get().quantity, 5)
+
 
 class ListResponseTests(SalesAPITestCase):
     def test_list_returns_bare_array(self):

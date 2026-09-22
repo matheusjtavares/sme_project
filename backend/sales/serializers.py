@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 
 from sales.models import Customer, Product, Sale, SaleItem, Seller
@@ -68,6 +69,7 @@ class SaleItemSerializer(serializers.ModelSerializer):
 
 class SaleSerializer(serializers.ModelSerializer):
     items = SaleItemSerializer(many=True)
+    invoice_number = serializers.CharField(required=False)
     total = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     customer_name = serializers.CharField(source="customer.name", read_only=True)
     seller_name = serializers.CharField(source="seller.name", read_only=True)
@@ -93,9 +95,28 @@ class SaleSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop("items")
+        if "invoice_number" not in validated_data:
+            validated_data["invoice_number"] = self._next_invoice_number()
         sale = Sale.objects.create(**validated_data)
         self._replace_items(sale, items_data)
         return sale
+
+    def _next_invoice_number(self):
+        """DEV/validation scaffold: sequential NF-{year}-{seq:04d}.
+
+        No lock or transaction guard; the unique constraint on
+        invoice_number is the backstop against concurrent creates.
+        """
+        year = timezone.now().year
+        prefix = f"NF-{year}-"
+        rows = Sale.objects.filter(invoice_number__startswith=prefix).values_list(
+            "invoice_number", flat=True
+        )
+        last = max(
+            (int(row[len(prefix):]) for row in rows if row[len(prefix):].isdigit()),
+            default=0,
+        )
+        return f"{prefix}{last + 1:04d}"
 
     def update(self, instance, validated_data):
         items_data = validated_data.pop("items", None)

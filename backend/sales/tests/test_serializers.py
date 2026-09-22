@@ -246,6 +246,52 @@ class SaleSerializerTests(SalesTestCase):
         self.assertEqual(updated.items.count(), 1)
         self.assertEqual(updated.items.get().quantity, 5)
 
+    def test_create_generates_invoice_number_when_missing(self):
+        payload = {
+            "sold_at": "2026-09-02T09:30:00Z",
+            "customer": self.customer.id,
+            "seller": self.seller.id,
+            "items": [{"product": self.product.id, "quantity": 2}],
+        }
+        serializer = SaleSerializer(data=payload)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        sale = serializer.save()
+        self.assertEqual(sale.invoice_number, f"NF-{timezone.now().year}-0001")
+        self.assertEqual(sale.items.count(), 1)
+
+    def test_create_preserves_explicit_invoice_number(self):
+        serializer = SaleSerializer(
+            data=self._sale_payload(
+                [{"product": self.product.id, "quantity": 2}],
+                invoice_number="NF-EXPLICIT-1",
+            )
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        sale = serializer.save()
+        self.assertEqual(sale.invoice_number, "NF-EXPLICIT-1")
+
+    def test_update_preserves_invoice_number_when_missing(self):
+        sale = make_sale(
+            invoice_number="NF-KEEP-1",
+            customer=self.customer,
+            seller=self.seller,
+        )
+        SaleItem.objects.create(
+            sale=sale,
+            product=self.product,
+            quantity=1,
+            unit_price=self.product.unit_price,
+        )
+        serializer = SaleSerializer(
+            sale,
+            data={"items": [{"product": self.product.id, "quantity": 5}]},
+            partial=True,
+        )
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated = serializer.save()
+        self.assertEqual(updated.invoice_number, "NF-KEEP-1")
+        self.assertEqual(updated.items.get().quantity, 5)
+
 
 class CommissionReportSerializerTests(SalesTestCase):
     def test_serializes_seller_commission_with_total_sales(self):
