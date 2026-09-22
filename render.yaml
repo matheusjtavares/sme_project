@@ -61,8 +61,7 @@ services:
   # ---------------------------------------------------------------
   - type: web
     name: sme-frontend
-    runtime: static
-    plan: free
+    runtime: static          # static sites have no `plan` field — always free
     branch: main
     rootDir: frontend
     buildCommand: npm ci && npm run build
