@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from sales.models import Customer, Product, Sale, SaleItem, Seller
+from sales.services.commission import item_commission, load_weekday_commission_rules
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -22,11 +23,47 @@ class SellerSerializer(serializers.ModelSerializer):
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source="product.description", read_only=True)
+    commission_percent = serializers.SerializerMethodField()
+    commission = serializers.SerializerMethodField()
     unit_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+
+    _rules = None
 
     class Meta:
         model = SaleItem
-        fields = ["id", "product", "quantity", "unit_price"]  # noqa: RUF012
+        fields = [  # noqa: RUF012
+            "id",
+            "product",
+            "product_name",
+            "quantity",
+            "unit_price",
+            "commission_percent",
+            "commission",
+        ]
+
+    @property
+    def rules(self):
+        if self._rules is None:
+            self._rules = load_weekday_commission_rules()
+        return self._rules
+
+    def _commission_data(self, obj):
+        return item_commission(
+            obj.product.commission_percent,
+            obj.sale.sold_at.weekday(),
+            obj.quantity,
+            obj.unit_price,
+            self.rules,
+        )
+
+    def get_commission_percent(self, obj):
+        percent, _ = self._commission_data(obj)
+        return str(percent)
+
+    def get_commission(self, obj):
+        _, amount = self._commission_data(obj)
+        return str(amount)
 
 
 class SaleSerializer(serializers.ModelSerializer):
@@ -84,6 +121,7 @@ class SaleSerializer(serializers.ModelSerializer):
 class SellerCommissionSerializer(serializers.Serializer):
     id = serializers.IntegerField(source="seller.id")
     name = serializers.CharField(source="seller.name")
+    total_sales = serializers.DecimalField(max_digits=12, decimal_places=2)
     total_commission = serializers.DecimalField(
         max_digits=12,
         decimal_places=2,

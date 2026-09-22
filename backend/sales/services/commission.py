@@ -17,6 +17,22 @@ def effective_commission_percent(product_percent, weekday, configs):
     return max(config.min_percent, min(product_percent, config.max_percent))
 
 
+def item_commission(base_percent, weekday, quantity, unit_price, rules):
+    """Calculate the effective commission percent and amount for a single sale item.
+    Args:
+        base_percent (Decimal): The product's configured commission percent.
+        weekday (int): The Python weekday (0=Monday) of the parent sale.
+        quantity (int): Number of items sold.
+        unit_price (Decimal): The unit price applied to the sale item.
+        rules (dict): A dictionary of weekday commission rules.
+    Returns:
+        tuple[Decimal, Decimal]: The effective commission percent and the commission amount in cents.
+    """
+    percent = effective_commission_percent(base_percent, weekday, rules)
+    amount = ((percent / HUNDRED) * quantity * unit_price).quantize(CENTS, rounding=ROUND_HALF_UP)
+    return percent, amount
+
+
 def sale_commission(sale, rules):
     """Calculate the commission for a single sale based on the product's commission percent and any applicable weekday rules.
     Args:
@@ -28,12 +44,18 @@ def sale_commission(sale, rules):
     weekday = sale.sold_at.weekday()
     total = ZERO
     for item in sale.items.all():
-        percent = effective_commission_percent(item.product.commission_percent, weekday, rules)
-        total += (percent / HUNDRED) * item.quantity * item.unit_price
+        _, amount = item_commission(
+            item.product.commission_percent,
+            weekday,
+            item.quantity,
+            item.unit_price,
+            rules,
+        )
+        total += amount
     return total.quantize(CENTS, rounding=ROUND_HALF_UP)
 
 
-def _load_weekday_commission_rules():
+def load_weekday_commission_rules():
     return {config.weekday: config for config in WeekdayCommission.objects.all()}
 
 
@@ -45,7 +67,7 @@ def commission_report(start: dt.datetime, end: dt.datetime) -> dict:
     Returns:
         dict: A dictionary containing the commission report data.
     """
-    rules = _load_weekday_commission_rules()
+    rules = load_weekday_commission_rules()
     sales = (
         Sale.objects.filter(sold_at__date__gte=start, sold_at__date__lte=end)
         .select_related("seller")
@@ -53,15 +75,24 @@ def commission_report(start: dt.datetime, end: dt.datetime) -> dict:
     )
 
     totals = defaultdict(lambda: ZERO)
+    sales_totals = defaultdict(lambda: ZERO)
     sellers = {}
     grand_total = ZERO
     for sale in sales:
         commission = sale_commission(sale, rules)
         totals[sale.seller_id] += commission
+        sales_totals[sale.seller_id] += sale.total
         sellers[sale.seller_id] = sale.seller
         grand_total += commission
 
-    rows = [{"seller": sellers[seller_id], "total": totals[seller_id]} for seller_id in totals]
+    rows = [
+        {
+            "seller": sellers[seller_id],
+            "total": totals[seller_id],
+            "total_sales": sales_totals[seller_id],
+        }
+        for seller_id in totals
+    ]
     rows.sort(key=lambda row: row["seller"].name)
 
     return {"sellers": rows, "total": grand_total}

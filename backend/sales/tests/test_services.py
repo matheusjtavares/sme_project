@@ -136,7 +136,9 @@ class CommissionReportTests(SalesTestCase):
         sellers = report["sellers"]
         self.assertEqual([row["seller"].name for row in sellers], ["Ana Costa", "Maria Silva"])
         self.assertEqual(sellers[0]["total"], Decimal("5.00"))
+        self.assertEqual(sellers[0]["total_sales"], Decimal("100.00"))
         self.assertEqual(sellers[1]["total"], Decimal("10.00"))
+        self.assertEqual(sellers[1]["total_sales"], Decimal("200.00"))
         self.assertEqual(report["total"], Decimal("15.00"))
 
     def test_report_excludes_sales_outside_range(self):

@@ -54,7 +54,7 @@ class ProductApiTests(SalesAPITestCase):
     def test_list_products(self):
         response = self.client.get(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()["results"]), 1)
+        self.assertEqual(len(response.json()), 1)
 
     def test_retrieve_product(self):
         response = self.client.get(reverse("product-detail", args=[self.product.id]))
@@ -243,6 +243,28 @@ class SaleApiTests(SalesAPITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_sale_list_includes_item_derived_fields(self):
+        sale = make_sale(
+            invoice_number="NF-0001",
+            customer=self.customer,
+            seller=self.seller,
+        )
+        SaleItem.objects.create(
+            sale=sale,
+            product=self.product,
+            quantity=2,
+            unit_price=self.product.unit_price,
+        )
+        response = self.client.get(reverse("sale-list"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 1)
+        item = data[0]["items"][0]
+        self.assertEqual(item["product_name"], "Test product")
+        self.assertEqual(item["commission_percent"], "5.00")
+        self.assertEqual(item["commission"], "1.00")
+
     def test_sale_detail_includes_derived_fields(self):
         sale = make_sale(
             invoice_number="NF-0001",
@@ -262,21 +284,25 @@ class SaleApiTests(SalesAPITestCase):
         self.assertEqual(data["customer_name"], "Acme Corp")
         self.assertEqual(data["seller_name"], "Maria Silva")
         self.assertEqual(len(data["items"]), 1)
+        item = data["items"][0]
+        self.assertEqual(item["product_name"], "Test product")
+        self.assertEqual(item["commission_percent"], "5.00")
+        self.assertEqual(item["commission"], "1.00")
 
     def test_anonymous_cannot_create_sale(self):
         response = self.client.post(reverse("sale-list"), data={}, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class PaginationTests(SalesAPITestCase):
-    def test_list_respects_page_size(self):
+class ListResponseTests(SalesAPITestCase):
+    def test_list_returns_bare_array(self):
         for i in range(51):
             make_product(code=f"PAG-{i:03d}")
         response = self.client.get(reverse("product-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
-        self.assertEqual(len(data["results"]), 50)
-        self.assertIsNotNone(data["next"])
+        self.assertIsInstance(data, list)
+        self.assertEqual(len(data), 51)
 
 
 class CommissionReportApiTests(SalesAPITestCase):
@@ -316,6 +342,7 @@ class CommissionReportApiTests(SalesAPITestCase):
         self.assertEqual(data["end"], "2026-01-31")
         self.assertEqual(len(data["sellers"]), 1)
         self.assertEqual(data["sellers"][0]["name"], "Maria Silva")
+        self.assertEqual(Decimal(data["sellers"][0]["total_sales"]), Decimal("100.00"))
         self.assertEqual(Decimal(data["sellers"][0]["total_commission"]), Decimal("5.00"))
         self.assertEqual(Decimal(data["total_commission"]), Decimal("5.00"))
 

@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from sales.models import SaleItem
 from sales.serializers import (
+    CommissionReportSerializer,
     CustomerSerializer,
     ProductSerializer,
     SaleItemSerializer,
@@ -146,6 +147,12 @@ class SaleItemSerializerTests(SalesTestCase):
         self.assertEqual(data["quantity"], 2)
         self.assertEqual(data["product"], self.product.id)
 
+    def test_serializes_derived_fields(self):
+        data = SaleItemSerializer(self.item).data
+        self.assertEqual(data["product_name"], "Test product")
+        self.assertEqual(data["commission_percent"], "5.00")
+        self.assertEqual(data["commission"], "1.00")
+
     def test_unit_price_is_read_only(self):
         serializer = SaleItemSerializer(
             data={
@@ -215,6 +222,10 @@ class SaleSerializerTests(SalesTestCase):
         self.assertEqual(data["customer_name"], "Acme Corp")
         self.assertEqual(data["seller_name"], "Maria Silva")
         self.assertEqual(len(data["items"]), 1)
+        item = data["items"][0]
+        self.assertEqual(item["product_name"], "Test product")
+        self.assertEqual(item["commission_percent"], "5.00")
+        self.assertEqual(item["commission"], "1.00")
 
     def test_update_replaces_items(self):
         sale = make_sale(invoice_number="NF-0001", customer=self.customer, seller=self.seller)
@@ -234,3 +245,24 @@ class SaleSerializerTests(SalesTestCase):
         updated = serializer.save()
         self.assertEqual(updated.items.count(), 1)
         self.assertEqual(updated.items.get().quantity, 5)
+
+
+class CommissionReportSerializerTests(SalesTestCase):
+    def test_serializes_seller_commission_with_total_sales(self):
+        seller = make_seller()
+        payload = {
+            "start": "2026-01-01",
+            "end": "2026-01-31",
+            "sellers": [
+                {"seller": seller, "total": Decimal("10.00"), "total_sales": Decimal("200.00")}
+            ],
+            "total": Decimal("10.00"),
+        }
+        data = CommissionReportSerializer(payload).data
+        self.assertEqual(set(data), {"start", "end", "sellers", "total_commission"})
+        row = data["sellers"][0]
+        self.assertEqual(row["id"], seller.id)
+        self.assertEqual(row["name"], seller.name)
+        self.assertEqual(Decimal(row["total_sales"]), Decimal("200.00"))
+        self.assertEqual(Decimal(row["total_commission"]), Decimal("10.00"))
+        self.assertEqual(Decimal(data["total_commission"]), Decimal("10.00"))
