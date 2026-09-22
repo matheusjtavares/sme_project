@@ -6,7 +6,7 @@ import Commissions from "@/pages/Commissions";
 import EditSales from "@/pages/EditSales";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
-import NovaVenda from "@/pages/NovaVenda";
+import NovaVenda from "@/pages/NewSale";
 import Sales from "@/pages/Sales";
 
 export default function AppRoutes() {

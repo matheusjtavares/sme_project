@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import SaleForm from "@/components/SaleForm";
-import styles from "./NovaVenda.module.css";
+import styles from "./NewSales.module.css";
 import { createSale } from "@/services/sales";
 import { useCustomers } from "@/hooks/useCustomers";
 import { useProducts } from "@/hooks/useProducts";
