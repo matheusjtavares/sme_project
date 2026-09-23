@@ -65,7 +65,7 @@ services:
     runtime: static          # static sites have no `plan` field — always free
     branch: main
     rootDir: frontend
-    buildCommand: npm ci && npm run lint && npm run build
+    buildCommand: npm ci && npm run lint && npm run test && npm run build
     staticPublishPath: dist
     buildFilter:
       paths:
