@@ -1,7 +1,8 @@
 import { Fragment, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import { BsPencil, BsTrash } from "react-icons/bs";
+import { BsPencilSquare } from "react-icons/bs";
+import { FaTrash } from "react-icons/fa";
 import { useSales } from "@/hooks/useSales";
 import styles from "./SalesTable.module.css";
 import { NavLink } from "react-router-dom";
@@ -93,7 +94,7 @@ function SalesTable() {
                           className="btn btn-link p-0 text-decoration-none"
                           aria-label="Editar venda"
                         >
-                          <BsPencil />
+                          <BsPencilSquare />
                         </NavLink>
 
                         <Button
@@ -102,7 +103,7 @@ function SalesTable() {
                           className="p-0 text-danger text-decoration-none"
                           aria-label="Excluir venda"
                         >
-                          <BsTrash />
+                          <FaTrash />
                         </Button>
                       </span>
                     </td>

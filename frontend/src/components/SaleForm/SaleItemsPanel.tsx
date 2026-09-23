@@ -2,7 +2,7 @@ import { useState } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { BsTrash } from "react-icons/bs";
+import { FaTrash } from "react-icons/fa";
 import Autocomplete, {
   type AutocompleteOption,
 } from "@/components/Autocomplete";
@@ -21,7 +21,7 @@ interface SaleItemsPanelProps {
 function toAutocompleteOptions(products: Product[]): AutocompleteOption[] {
   return products.map((product) => ({
     value: product.id,
-    label: product.description,
+    label: `${product.id} - ${product.description}`,
     searchText: `${product.code} ${product.description}`,
   }));
 }
@@ -110,7 +110,7 @@ function SaleItemsPanel({
           ) : (
             items.map((item) => (
               <tr key={item.id}>
-                <td>{item.product_name}</td>
+                <td>{item.product} - {item.product_name}</td>
 
                 <td>{item.quantity}</td>
 
@@ -128,7 +128,7 @@ function SaleItemsPanel({
                     aria-label="Excluir item"
                     onClick={() => onRemoveItem(item.id)}
                   >
-                    <BsTrash />
+                    <FaTrash />
                   </Button>
                 </td>
               </tr>
