@@ -81,8 +81,7 @@ export default function Login() {
         </Form>
 
         <p className={styles.note}>
-          Ambiente de desenvolvimento: use o superusuário criado por{" "}
-          <code>python manage.py seed_superuser</code>.
+          Ambiente de desenvolvimento
         </p>
       </div>
     </div>
