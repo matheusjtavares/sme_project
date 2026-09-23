@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { listSales } from "@/services/sales";
 import type { Sale } from "@/types/sales";
@@ -7,6 +7,7 @@ interface UseSalesResult {
   sales: Sale[];
   loading: boolean;
   error: string | null;
+  removeSale: (id: number) => void;
 }
 
 export function useSales(): UseSalesResult {
@@ -33,5 +34,9 @@ export function useSales(): UseSalesResult {
     };
   }, []);
 
-  return { sales, loading, error };
+  const removeSale = useCallback((id: number) => {
+    setSales((current) => current.filter((sale) => sale.id !== id));
+  }, []);
+
+  return { sales, loading, error, removeSale };
 }

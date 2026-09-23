@@ -4,6 +4,7 @@ import type { Sale, SalePayload } from "@/types/sales";
 
 vi.mock("@/api/client", () => ({
   default: {
+    delete: vi.fn(),
     get: vi.fn(),
     post: vi.fn(),
     patch: vi.fn(),
@@ -14,11 +15,13 @@ import api from "@/api/client";
 import {
   buildSalePayload,
   createSale,
+  deleteSale,
   getSale,
   listSales,
   updateSale,
 } from "./sales";
 
+const mockedDelete = vi.mocked(api.delete);
 const mockedGet = vi.mocked(api.get);
 const mockedPost = vi.mocked(api.post);
 const mockedPatch = vi.mocked(api.patch);
@@ -97,6 +100,14 @@ describe("createSale", () => {
 
     await expect(createSale(payload)).resolves.toBe(sale);
     expect(mockedPost).toHaveBeenCalledWith("/sales/", payload);
+  });
+});
+
+describe("deleteSale", () => {
+  it("DELETEs /sales/:id/", async () => {
+    mockedDelete.mockResolvedValue({ data: null });
+    await expect(deleteSale(1)).resolves.toBeUndefined();
+    expect(mockedDelete).toHaveBeenCalledWith("/sales/1/");
   });
 });
 

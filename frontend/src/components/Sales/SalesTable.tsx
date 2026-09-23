@@ -1,9 +1,12 @@
 import { Fragment, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { BsPencilSquare } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { useSales } from "@/hooks/useSales";
+import { deleteSale } from "@/services/sales";
+import type { Sale } from "@/types/sales";
 import styles from "./SalesTable.module.css";
 import { NavLink } from "react-router-dom";
 import { formatCurrency } from "@/utils/format";
@@ -24,8 +27,30 @@ function formatDateTime(iso: string): string {
 }
 
 function SalesTable() {
-  const { sales, loading, error } = useSales();
+  const { sales, loading, error, removeSale } = useSales();
   const [expandedSaleId, setExpandedSaleId] = useState<number | null>(null);
+  const [saleToDelete, setSaleToDelete] = useState<Sale | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  function handleDelete() {
+    if (!saleToDelete) return;
+
+    setDeleting(true);
+    setDeleteError(null);
+
+    deleteSale(saleToDelete.id)
+      .then(() => {
+        removeSale(saleToDelete.id);
+        setSaleToDelete(null);
+      })
+      .catch(() => {
+        setDeleteError("Não foi possível excluir a venda.");
+      })
+      .finally(() => {
+        setDeleting(false);
+      });
+  }
 
   return (
     <div className={styles.tableWrapper}>
@@ -102,6 +127,7 @@ function SalesTable() {
                           variant="link"
                           className="p-0 text-danger text-decoration-none"
                           aria-label="Excluir venda"
+                          onClick={() => setSaleToDelete(sale)}
                         >
                           <FaTrash />
                         </Button>
@@ -163,6 +189,48 @@ function SalesTable() {
           )}
         </tbody>
       </Table>
+
+      <Modal
+        show={saleToDelete !== null}
+        onHide={() => {
+          if (!deleting) setSaleToDelete(null);
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Excluir venda</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <p className="mb-0">
+            Tem certeza que deseja excluir permanentemente a venda{" "}
+            <strong>{saleToDelete?.invoice_number}</strong>? Esta ação não pode
+            ser desfeita.
+          </p>
+
+          {deleteError && (
+            <span className="d-block mt-3 text-danger">{deleteError}</span>
+          )}
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setSaleToDelete(null)}
+            disabled={deleting}
+          >
+            Cancelar
+          </Button>
+
+          <Button
+            variant="danger"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            {deleting ? "Excluindo..." : "Excluir"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

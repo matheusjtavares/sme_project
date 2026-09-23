@@ -36,6 +36,10 @@ export function updateSale(id: number, payload: SalePayload): Promise<Sale> {
     .then((response) => response.data);
 }
 
+export function deleteSale(id: number): Promise<void> {
+  return api.delete(`/sales/${id}/`).then(() => undefined);
+}
+
 export function buildSalePayload(source: SalePayloadSource): SalePayload {
   return {
     sold_at: new Date(source.sold_at).toISOString(),
