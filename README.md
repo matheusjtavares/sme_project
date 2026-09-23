@@ -32,7 +32,8 @@ dj-rest-auth, python-dotenv, managed with `uv`. Tests use Django's test runner;
 linting/formatting via Ruff.
 
 **Frontend** — React 19, TypeScript, Vite, React Router 7, React Bootstrap 5,
-Axios (with JWT refresh interceptor), react-datepicker, date-fns. Linting via Oxlint.
+Axios (with JWT refresh interceptor), react-datepicker, date-fns. Linting via
+Oxlint; unit tests via Vitest.
 
 ## Repository layout
 
@@ -112,9 +113,11 @@ The stack is currently published at (URLs come from [`render.yaml`](render.yaml)
   internal database URL, and sets `VITE_API_URL` at build time.
 - Update the URLs above (plus `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`
   and `CSRF_TRUSTED_ORIGINS` in `render.yaml`) to match the new services.
-- The SPA rewrite rule (`/*` → `/index.html`) keeps React Router deep links
-  working; the backend uses gunicorn bound to Render's `$PORT`, WhiteNoise for
-  static files, and a health check at `/api/health/`.
+- The SPA is built with `npm ci && npm run lint && npm run test && npm run build`
+  (lint, Vitest suite, then production build). A rewrite rule (`/*` →
+  `/index.html`) keeps React Router deep links working; the backend uses
+  gunicorn bound to Render's `$PORT`, WhiteNoise for static files, and a health
+  check at `/api/health/`.
 
 > The free PostgreSQL instance expires **30 days after creation**. When it
 > expires, delete the resources and re-run **New > Blueprint** to recreate them.
@@ -124,7 +127,7 @@ Login with `admin` / `admin` (the build command runs `seed_superuser`).
 ## Documentation
 
 - [**Backend README**](backend/README.md) — models, API surface, services, testing
-- [**Frontend README**](frontend/README.md) — folder structure, data flow, scripts
+- [**Frontend README**](frontend/README.md) — folder structure, data flow, scripts, testing
 - [**Engineering guidelines**](docs/guidelines/) — 12-factor app, SOLID, and git best practices
 - [**Challenge specification**](docs/GIT%20SME.md) — original requirements
 

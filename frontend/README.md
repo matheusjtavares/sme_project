@@ -27,6 +27,24 @@ The Vite dev server proxies every `/api` request to `http://localhost:8000`
 | `build`             | `tsc -b && vite build` | Type-check then production build    |
 | `preview`           | `vite preview`   | Serve the production build locally       |
 | `lint`              | `oxlint`         | Lint with Oxc's Oxlint (config in `.oxlintrc.json`) |
+| `test`              | `vitest run`     | Run the Vitest unit suite once           |
+| `test:watch`        | `vitest`         | Re-run tests on change                   |
+
+## Testing
+
+Unit tests run with **Vitest** and live next to the code as `src/**/*.test.ts`
+(the pattern is registered in `vite.config.ts`):
+
+```bash
+npm test              # run once
+npm run test:watch    # re-run on change
+```
+
+The suite covers the client business logic that doesn't depend on a browser:
+JWT token storage (`auth/tokens.test.ts`), API services (`services/sales.test.ts`,
+`services/commissions.test.ts`) and pure formatting helpers (`utils/format.test.ts`).
+Service tests mock `@/api/client`, so no backend is required to run them. The
+Render build also runs `npm run test` before publishing (see `render.yaml`).
 
 ## Architecture
 
@@ -76,6 +94,18 @@ Defined in `routes/index.tsx` and mounted in `App.tsx`:
 
 `RequireAuth` guards the layout; unauthenticated users are redirected to `/login`.
 
+### Sales management
+
+`pages/Sales` renders `components/Sales/SalesTable`. For each sale it offers:
+
+- **Expandable items** - "Ver itens" reveals the products, quantities, unit
+  prices, per-item commission and commission total.
+- **Edit** - the pencil icon links to `/sales/edit/:id`.
+- **Delete** - the trash icon opens a Bootstrap confirmation modal showing the
+  invoice number; on confirm it calls `DELETE /api/sales/:id/` and removes the
+  row from the list without a refetch (`useSales.removeSale`). Deleting a sale
+  also deletes its items (cascade on the backend).
+
 ### Authentication
 
 JWT flow via `api/client.ts`:
@@ -95,5 +125,5 @@ JWT flow via `api/client.ts`:
 - Path alias `@/` → `src/` (configured in `vite.config.ts` and `tsconfig*.json`).
 - Snake-case API fields are kept as-is in `types/` to match backend payloads.
 - Currency formatting lives in one place (`utils/format.ts`, pt-BR).
-- Lint with `npm run lint` (Oxlint) before committing; `npm run build` also
-  runs `tsc` type-checking.
+- Lint with `npm run lint` (Oxlint) and run `npm test` before committing;
+  `npm run build` also runs `tsc` type-checking.
