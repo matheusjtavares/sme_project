@@ -19,8 +19,24 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "coverage[toml]>=7.16.2",
     "ruff>=0.16.8",
 ]
+
+[tool.coverage.run]
+# Measure the business app only. Migrations, tests and package inits are
+# generated or non-production code, so they are left out of the percentage.
+source = ["sales"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+show_missing = false
+skip_covered = false
+precision = 1
 
 [tool.ruff]
 target-version = "py314"

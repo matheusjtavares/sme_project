@@ -60,6 +60,27 @@ uv run ruff format .                    # auto-format
 Tests live in `sales/tests/` with shared factories in `sales/tests/base.py`.
 Run the full suite with `uv run python manage.py test`.
 
+### Test coverage
+
+Coverage is measured with [`coverage.py`](https://coverage.readthedocs.io/),
+configured under `[tool.coverage.*]` in `pyproject.toml`.
+
+```bash
+uv run coverage run manage.py test sales   # run the suite under coverage
+uv run coverage report                     # per-file table + TOTAL %
+uv run coverage html                       # HTML report -> backend/htmlcov/index.html
+```
+
+The percentage covers the `sales` app only (`models.py`, `serializers.py`,
+`views.py`, `urls.py`, `validators.py`, `admin.py`, `apps.py` and
+`services/commission.py`). Migrations, tests and package `__init__.py` files are
+excluded. Line coverage only — branch coverage is not measured.
+
+> **Note**: run coverage without `--parallel`. Django's test runner defaults to
+> `--parallel=0` (a single process), so the commands above measure the whole
+> suite. With `--parallel=N` the tests run in subprocesses that coverage does
+> not instrument, which would understate the reported percentage.
+
 ## Architecture
 
 ```
